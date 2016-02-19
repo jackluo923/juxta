@@ -86,7 +86,7 @@ class Pickler(object):
         self.log_d = log_d
         self.mem_gib = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES') ) / (1024.**3)
         # self.ncpu  = multiprocessing.cpu_count()  #Using this will parameter will likely run out of memory and swap
-        self.ncpu = self.mem_gib // 8  # Allocate 8 GB ram per concurrent instance. If not enough ram, start only 1 instance
+        self.ncpu = int(self.mem_gib // 8)  # Allocate 8 GB ram per concurrent instance. If not enough ram, start only 1 instance
         if (self.ncpu == 0):
             self.ncpu = 1
         self.parser = Parser(self.log_d)
