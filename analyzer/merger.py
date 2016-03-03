@@ -525,10 +525,36 @@ def merge_ieee80211(opts, ieee80211):
     fs = ieee80211  # for compatibility reasons
 
     ieee80211_path = {
-        'b43': 'b43'
+        "adm8211": "dm8211.c",
+        "at76c50x-usb": "dm8211.c",
+        "ath_ar5523": "ath/ar5523",
+        "ath_ath10k": "ath/ath10k",
+        "ath_ath5k": "ath/ath5k",
+        "ath_ath9k": "ath/ath9k",
+        "ath_carl9170": "ath/carl9170",
+        "ath_wcn36xx": "ath/wcn36xx",
+        "b43": "b43",
+        "b43legacy": "b43legacy",
+        "brcm80211_brcmsmac": "brcm80211/brcmsmac",
+        "cw1200": "cw1200",
+        "iwlegacy": "iwlegacy",
+        "iwlwifi_dvm": "iwlwifi/dvm",
+        "iwlwifi_mvm": "iwlwifi/mvm",
+        "libertas_tf": "libertas_tf",
+        "mac80211_hwsim": "mac80211_hwsim",
+        "mwl8k": "mwl8k",
+        "p54": "p54",
+        "rsi": "rsi",
+        "rt2x00": "rt2x00",
+        "rtl818x_rtl8180": "rtl818x/rtl8180",
+        "rtl818x_rtl8187": "rtl818x/rtl8187",
+        "rtlwifi": "rtlwifi",
+        "ti_wl1251": "ti/wl1251",
+        "ti_wlcore": "ti/wlcore",
+        "zd1211rw": "zd1211rw"
     }
 
-    src_d = os.path.join(opts.linux, "drivers/net/wireless", fs)
+    src_d = os.path.join(opts.linux, "drivers/net/wireless", ieee80211_path[ieee80211])
     dst_d = "out/%s" % fs
     kconf = load_kconfig(os.path.join(opts.linux, ".config"))
 
@@ -621,7 +647,7 @@ if __name__ == "__main__":
                 os.system("cd out/%s; make -f Makefile.build" % fs)
     elif (opts.type == "ieee80211"):
         for fs in args:
-            merge_fs(opts, fs)
+            merge_ieee80211(opts, fs)
             if opts.test:
                 os.system("cd out/%s; make -f Makefile.build" % fs)
     

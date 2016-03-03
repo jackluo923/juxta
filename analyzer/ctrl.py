@@ -21,6 +21,7 @@ ROOT  = os.path.abspath(os.path.dirname(__file__))
 LINUX = os.path.normpath(join(ROOT, "../../linux"))
 CLANG = join(ROOT, "../bin/llvm/bin/clang")
 FSCK  = join(ROOT, "../llvm/tools/clang/tools/scan-build/fss-build")
+TYPE = "fs"
 
 try:
     from subprocess import DEVNULL
@@ -102,7 +103,7 @@ def _run_merger(fs, linux):
 
 def _run_merger_ieee80211(ieee80211, linux):
     p = subprocess.Popen([os.path.join(ROOT, "merger.py"),
-                          "-l", linux,
+                          "-l", linux, "--type", "ieee80211",
                           ieee80211])
     print("[%s] merging %s" % (p.pid, ieee80211))
     return p.wait()
@@ -366,6 +367,8 @@ if __name__ == '__main__':
     parser.add_option("--linux", help="Linux kernel", default=LINUX)
     parser.add_option("--clang", help="Clang path", default=CLANG)
     parser.add_option("--outdir", help="Clang output dir", default="/tmp")
+    parser.add_option("--type", help="Juxta's analysis type: fs, ieee80211 ...etc", default=TYPE)
+
     (opts, args) = parser.parse_args()
 
     def __print_usage(note):
