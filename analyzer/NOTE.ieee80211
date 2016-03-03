@@ -22,7 +22,7 @@
 [M] mwl8k
 [M] p54
 [M] rsi
-[] rt2x00
+[M] rt2x00
 [M] rtl818x_rtl8180
 [M] rtl818x_rtl8187
 [M] rtlwifi

@@ -623,7 +623,7 @@ def merge_ieee80211(opts, ieee80211):
         "iwlwifi_mvm": "iwlwifi/mvm",
         "libertas_tf": "libertas_tf",
         "mac80211_hwsim": "",
-        "mwl8k": "", # need to fix this
+        "mwl8k": "",
         "p54": "p54",
         "rsi": "rsi",
         "rt2x00": "rt2x00", # need to fix this
