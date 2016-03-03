@@ -44,7 +44,7 @@ full list of drivers available inside NOTE.ieee80211, driver paths inside merger
 
 Static analysis of merged wireless driver code
 $ ./ctrl.py clang_all  (for all file systems)
-$ ./ctrl.py clang ext4 (for adm8211)
+$ ./ctrl.py clang adm8211 (for adm8211 ath_ath9k ...etc)
 ~~~~~
 
 - How to create path databases for filesystems
