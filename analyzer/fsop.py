@@ -14,7 +14,7 @@ ROOT = os.path.dirname(__file__)
 def load_conf(pn):
     conf = []
     for l in open(pn):
-        m = re.match("\[([\\w ]*)\] (\\w+).*", l)
+        m = re.match("\[([\\w ]*)\] ([0-9a-zA-Z_-]+).*", l)
         if m:
             tok = m.groups()
             conf.append((tok[0].strip(), tok[1]))
