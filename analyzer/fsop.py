@@ -22,6 +22,7 @@ def load_conf(pn):
 
 global CONF
 CONF = load_conf(os.path.join(ROOT, "NOTE.fs"))
+CONF_ieee80211 = load_conf(os.path.join(ROOT, "NOTE.ieee80211"))
 
 def get_fs(kind):
     global CONF
@@ -31,8 +32,20 @@ def get_fs(kind):
             rtn.append(fs)
     return rtn
 
+def get_ieee80211(kind):
+    global CONF_ieee80211
+    rtn = []
+    for (tag, ieee80211) in CONF_ieee80211:
+        # every element in kind which can be found in tag
+        if all(t in tag for t in kind):
+            rtn.append(ieee80211)
+    return rtn
+
 def get_all_fs():
     return get_fs("")
+
+def get_all_ieee80211():
+    return get_ieee80211("")
 
 def dump_known_ops(fs_d):
     STRUCTS = [

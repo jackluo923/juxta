@@ -57,6 +57,16 @@ def fs_args(func):
         return func(*args, **kwargs)
     return wrapped
 
+def ieee80211_args(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        if len(args[1]) == 0:
+            print("ERROR: should provide ieee80211 driver names")
+            exit(1)
+
+        return func(*args, **kwargs)
+    return wrapped
+
 # path utils
 def mkdirp(out_d):
     if not os.path.exists(out_d):
@@ -88,6 +98,13 @@ def _run_merger(fs, linux):
                           "-l", linux,
                           fs])
     print("[%s] merging %s" % (p.pid, fs))
+    return p.wait()
+
+def _run_merger_ieee80211(ieee80211, linux):
+    p = subprocess.Popen([os.path.join(ROOT, "merger.py"),
+                          "-l", linux,
+                          ieee80211])
+    print("[%s] merging %s" % (p.pid, ieee80211))
     return p.wait()
 
 def _run_clang(fs, clang):
@@ -141,7 +158,6 @@ def simple_mp_fs(fn, args):
 @fs_args
 def cmd_merge(opts, args):
     """merge fs specified (e.g., 'merge ext3 ext4')"""
-
     import merger
     for fs in args:
         merger.merge_fs(opts, fs)
@@ -156,6 +172,25 @@ def cmd_merge_all(opts, _):
     pool.join()
 
     return 0
+
+@ieee80211_args
+def cmd_merge_ieee80211(opts, args):
+    """merge ieee 802.11 wifi drivers specified"""
+    import merger
+    for fs in args:
+        merger.merge_ieee80211(opts, fs)
+
+def cmd_merge_all_ieee80211(opts, _):
+    """merge all ieee80211 drivers (e.g., 'merge_all')"""
+
+    pool = mp.Pool(mp.cpu_count())
+    for fs in fsop.get_ieee80211("M"):
+        pool.apply_async(_run_merger_ieee80211, args = (fs, opts.linux))
+    pool.close()
+    pool.join()
+
+    return 0
+
 
 @fs_args
 def cmd_clang(opts, args):

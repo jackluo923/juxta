@@ -1,5 +1,14 @@
 Juxta: Cross-checking Semantic Correctness for File Systems
 ===========================================================
+Notes
+------------
+NOTE.ieee80211 contains a list of all wireless drivers Juxta will parse for merge_all_ieee80211 command
+
+
+
+
+
+
 
 Environments
 ------------

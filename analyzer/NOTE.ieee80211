@@ -1,0 +1,31 @@
+# M: known to be merged as a single code
+# C: known to run it with clang pass
+# F: failed with clang pass
+
+[] adm8211
+[] at76c50x-usb
+[] ath_ar5523
+[] ath_ath10k
+[] ath_ath5k
+[] ath_ath9k
+[] ath_carl9170
+[] ath_wcn36xx
+[M] b43
+[] b43legacy
+[] brcm80211_brcmsmac
+[] cw1200
+[] iwlegacy
+[] iwlwifi_dvm
+[] iwlwifi_mvm
+[] libertas_tf
+[] mac80211_hwsim
+[] mwl8k
+[] p54
+[] rsi
+[] rt2x00
+[] rtl818x_rtl8180
+[] rtl818x_rtl8187
+[] rtlwifi
+[] ti_wl1251
+[] ti_wlcore
+[] zd1211rw

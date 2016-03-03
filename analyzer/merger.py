@@ -21,6 +21,7 @@ from pygments.token      import *
 
 ROOT  = os.path.abspath(os.path.dirname(__file__))
 LINUX = os.path.normpath(os.path.join(ROOT, "../../linux"))
+TYPE = "fs"
 
 # manual opt out
 #  (see, logfs defines hash_32() which was included by other c files)
@@ -519,6 +520,46 @@ def merge_fs(opts, fs):
     # final touch
     post_adjust_per_fs(fs, dst_d, out)
 
+# process a ieee80211 driver
+def merge_ieee80211(opts, ieee80211):
+    fs = ieee80211  # for compatibility reasons
+
+    ieee80211_path = {
+        'b43': 'b43'
+    }
+
+    src_d = os.path.join(opts.linux, "drivers/net/wireless", fs)
+    dst_d = "out/%s" % fs
+    kconf = load_kconfig(os.path.join(opts.linux, ".config"))
+
+    (target, files, cflags) = parse_makefile(kconf, src_d)
+
+    print("> fs   : %s" % target)
+    print("> files: %s" % files)
+
+    if fs != target:
+        print("! WARNING: you might not want: %s vs %s?" % (fs, target))
+
+    # adjust path
+    files = adjust_file_path(src_d, files)
+
+    # copy non-c files
+    prepare_dir(fs, opts.linux, src_d, dst_d, cflags)
+
+    # preprocess: opt out headers & expand
+    codes = preprocess(fs, src_d, files)
+
+    # rewrite
+    out = os.path.join(dst_d, "one.c")
+    (out_symbols, out_rewriting) = rewrite(fs, codes, out)
+
+    # kept them for debugging
+    dump_symbols_to_file(dst_d, "rewriting.info", out_rewriting)
+    dump_symbols_to_file(dst_d, "symbols.info", out_symbols)
+
+    # final touch
+    post_adjust_per_fs(fs, dst_d, out)
+
 # process a fs along with vfs
 def merge_vfs_fs(opts, fs):
     src_d = os.path.join(opts.linux, "fs")
@@ -563,7 +604,9 @@ def merge_vfs_fs(opts, fs):
 if __name__ == "__main__":
     parser = optparse.OptionParser("%s {-l %s} [fs]" % (LINUX, sys.argv[0]))
     parser.add_option("--linux", "-l", help="Linux kernel", default=LINUX)
-    parser.add_option("--test", "-t", help="Build after merged", 
+    # if --type flag is set to "ieee80211", we call merge_ieee80211 instead of merge_fs
+    parser.add_option("--type", help="Juxta's analysis type: fs, ieee80211 ...etc", default=TYPE)
+    parser.add_option("--test", "-t", help="Build after merged",
                       action="store_true", default=False)
     (opts, args) = parser.parse_args()
 
@@ -571,8 +614,14 @@ if __name__ == "__main__":
         parser.error("need to provie a fs name")
         exit(1)
 
-    for fs in args:
-        merge_fs(opts, fs)
-        if opts.test:
-            os.system("cd out/%s; make -f Makefile.build" % fs)
+    if (opts.type == "fs"):
+        for fs in args:
+            merge_fs(opts, fs)
+            if opts.test:
+                os.system("cd out/%s; make -f Makefile.build" % fs)
+    elif (opts.type == "ieee80211"):
+        for fs in args:
+            merge_fs(opts, fs)
+            if opts.test:
+                os.system("cd out/%s; make -f Makefile.build" % fs)
     
