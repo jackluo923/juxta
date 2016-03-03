@@ -2,8 +2,8 @@
 # C: known to run it with clang pass
 # F: failed with clang pass
 
-[] adm8211
-[] at76c50x-usb
+[M] adm8211
+[M] at76c50x-usb # this has some problems!!! "-" is not recognized
 [M] ath_ar5523
 [M] ath_ath10k
 [M] ath_ath5k
@@ -18,14 +18,14 @@
 [M] iwlwifi_dvm
 [M] iwlwifi_mvm
 [M] libertas_tf
-[] mac80211_hwsim
-[] mwl8k
+[M] mac80211_hwsim
+[M] mwl8k
 [M] p54
 [M] rsi
 [] rt2x00
 [M] rtl818x_rtl8180
 [M] rtl818x_rtl8187
-[] rtlwifi
+[M] rtlwifi
 [M] ti_wl1251
 [M] ti_wlcore
 [M] zd1211rw

@@ -265,6 +265,42 @@ obj-m += %s.o
 %s-y := one.o
 """ % ("\n".join(cflags), fs, fs))
 
+# copy/generate necessary files for building a kernel module if file is the root directory
+def prepare_dir_root(fs, linux, src_d, dst_d, cflags):
+    if not os.path.exists(dst_d):
+        os.makedirs(dst_d)
+
+    # copy only the .h file to the directory
+    if os.path.exists(src_d+fs+".h"):
+        do_copy(src_d+fs+".h", dst_d+"/"+fs+'.h')
+
+    # # copy non '.c' file
+    # for root, dirs, files in os.walk(src_d):
+    #     for name in files:
+    #         src = os.path.join(root, name)
+    #         dst = os.path.join(dst_d, src[len(src_d)+1:])
+    #
+    #         if not any(src.endswith(ext) for ext in [".c", ".o", ".cmd", ".d"]):
+    #             print("> copy %-50s -> %s" % (os.path.relpath(src), dst))
+    #             do_copy(src, dst)
+
+    # makefiles
+    with open(os.path.join(dst_d, "Makefile.build"), "w") as fd:
+        fd.write("""\
+KBUILD := %s
+all:
+	make -C $(KBUILD) M=$(PWD) modules
+clean:
+	make -C $(KBUILD) M=$(PWD) clean
+        """ % os.path.abspath(linux))
+
+    with open(os.path.join(dst_d, "Makefile"), "w") as fd:
+        fd.write("""\
+%s
+obj-m += %s.o
+%s-y := one.o
+""" % ("\n".join(cflags), fs, fs))
+
 # vfs specific
 def prepare_vfs_dir(fs, linux, src_d, dst_d, cflags):
     if not os.path.exists(dst_d):
@@ -323,6 +359,49 @@ def parse_makefile(kconf, src_d):
         print("! NOTE. more than one obj targets")
 
     target = target[0]
+    for (tgt, dep) in iter_make_rules(mk):
+        if tgt.startswith(target + "-"):
+            if "$" in tgt:
+                m = re.match(".*-\$\(([^\)]+)\)", tgt)
+                if m.groups()[0] not in kconf:
+                    continue
+            for s in dep.split():
+                if s.endswith(".o"):
+                    s = s.replace(".o", ".c")
+                    if not s in files:
+                        files.append(s)
+                else:
+                    print("! NOTE. require expansion on rule, but ignored")
+
+    # e.g., hppfs.c
+    if os.path.exists(os.path.join(src_d, target + ".c")):
+        files.append(target + ".c")
+
+    cflags = []
+    for stmt in iter_make_stmts(mk):
+        if stmt.startswith("ccflags-y"):
+            cflags.append(stmt)
+
+    return (target, files, cflags)
+
+def parse_root_makefile(kconf, src_d, ieee80211):
+    mk = os.path.join(src_d, "Makefile")
+
+    target = []
+    files = []
+
+    for (tgt, dep) in iter_make_rules(mk):
+        if tgt.startswith("obj-"):
+            # NOTE. pick first obj (only ocfs2 matters)
+            dep = dep.split()[0]
+            target.append(dep.replace(".o", ""))
+
+    # NOTE. see, fat/Makefile
+    #   multiple obj targets are used
+    if len(target) > 1:
+        print("! NOTE. more than one obj targets")
+
+    target = ieee80211
     for (tgt, dep) in iter_make_rules(mk):
         if tgt.startswith(target + "-"):
             if "$" in tgt:
@@ -525,8 +604,10 @@ def merge_ieee80211(opts, ieee80211):
     fs = ieee80211  # for compatibility reasons
 
     ieee80211_path = {
-        "adm8211": "dm8211.c",
-        "at76c50x-usb": "dm8211.c",
+        # if directory is "null", it means it resides in the root wireless driver directory
+        # also assume drivers in root directory only contains 1 file to build the driver
+        "adm8211": "",
+        "at76c50x-usb": "",
         "ath_ar5523": "ath/ar5523",
         "ath_ath10k": "ath/ath10k",
         "ath_ath5k": "ath/ath5k",
@@ -541,11 +622,11 @@ def merge_ieee80211(opts, ieee80211):
         "iwlwifi_dvm": "iwlwifi/dvm",
         "iwlwifi_mvm": "iwlwifi/mvm",
         "libertas_tf": "libertas_tf",
-        "mac80211_hwsim": "mac80211_hwsim",
-        "mwl8k": "mwl8k",
+        "mac80211_hwsim": "",
+        "mwl8k": "", # need to fix this
         "p54": "p54",
         "rsi": "rsi",
-        "rt2x00": "rt2x00",
+        "rt2x00": "rt2x00", # need to fix this
         "rtl818x_rtl8180": "rtl818x/rtl8180",
         "rtl818x_rtl8187": "rtl818x/rtl8187",
         "rtlwifi": "rtlwifi",
@@ -558,7 +639,11 @@ def merge_ieee80211(opts, ieee80211):
     dst_d = "out/%s" % fs
     kconf = load_kconfig(os.path.join(opts.linux, ".config"))
 
-    (target, files, cflags) = parse_makefile(kconf, src_d)
+    if (ieee80211_path[ieee80211] == ""):
+        # if driver is located in the root directory and there is only 1 .c file for the driver
+        (target, files, cflags) = parse_root_makefile(kconf, src_d, ieee80211)
+    else:
+        (target, files, cflags) = parse_makefile(kconf, src_d)
 
     print("> fs   : %s" % target)
     print("> files: %s" % files)
@@ -569,8 +654,11 @@ def merge_ieee80211(opts, ieee80211):
     # adjust path
     files = adjust_file_path(src_d, files)
 
-    # copy non-c files
-    prepare_dir(fs, opts.linux, src_d, dst_d, cflags)
+    if (ieee80211_path[ieee80211] == ""):
+        prepare_dir_root(fs, opts.linux, src_d, dst_d, cflags)
+    else:
+        # copy non-c files
+        prepare_dir(fs, opts.linux, src_d, dst_d, cflags)
 
     # preprocess: opt out headers & expand
     codes = preprocess(fs, src_d, files)
