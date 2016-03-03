@@ -1,8 +1,9 @@
-Juxta: Cross-checking Semantic Correctness for File Systems
-===========================================================
+Juxta: Cross-checking Semantic Correctness for IEEE 802.11 Wireless Driver and File Systems
+===========================================================================================
 Notes
 ------------
 NOTE.ieee80211 contains a list of all wireless drivers Juxta will parse for merge_all_ieee80211 command
+
 
 
 
@@ -33,8 +34,20 @@ $  make clang-full  (first time only)
 $  make clang       (from the next)
 ~~~~~
 
+- How to create path databases for IEEE 802.11 wireless drivers
+~~~~~{.sh}
+Merge IEEE 802.11 wireless drivers
+$ cd analyzer
+$ ./ctrl.py merge_all_ieee80211 (for all IEEE 802.11 drivers)
+$ ./ctrl.py merge_ieee80211 (for specific drivers: e.g. adm8211 ath_ath9k)
+full list of drivers available inside NOTE.ieee80211, driver paths inside merger.py.merge_ieee80211
 
-- How to create path databases
+Static analysis of merged wireless driver code
+$ ./ctrl.py clang_all  (for all file systems)
+$ ./ctrl.py clang ext4 (for adm8211)
+~~~~~
+
+- How to create path databases for filesystems
 ~~~~~{.sh}
 Merge file system code
 $ cd analyzer
