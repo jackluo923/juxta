@@ -3,7 +3,7 @@
 # F: failed with clang pass
 
 [M] adm8211
-[M] at76c50x-usb # this has some problems!!! "-" is not recognized
+[M] at76c50x-usb
 [M] ath_ar5523
 [M] ath_ath10k
 [M] ath_ath5k
