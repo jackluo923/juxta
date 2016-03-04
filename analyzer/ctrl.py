@@ -224,6 +224,17 @@ def cmd_clang_all(opts, _):
 
     return 0
 
+def cmd_clang_all_ieee80211(opts, _):
+    """run clang pass on all fs (e.g., 'clang_all)"""
+
+    pool = mp.Pool(mp.cpu_count())
+    for ieee80211 in fsop.get_ieee80211("C"):
+        pool.apply_async(_run_clang, args=(ieee80211, opts.clang))
+    pool.close()
+    pool.join()
+
+    return 0
+
 def cmd_clang_vfs_all(opts, _):
     """run clang pass on all fs (e.g., 'clang_all)"""
 

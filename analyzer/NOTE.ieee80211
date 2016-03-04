@@ -2,30 +2,30 @@
 # C: known to run it with clang pass
 # F: failed with clang pass
 
-[M] adm8211
-[M] at76c50x-usb # this has some problems!!! "-" is not recognized
-[M] ath_ar5523
-[M] ath_ath10k
-[M] ath_ath5k
-[M] ath_ath9k
-[M] ath_carl9170
-[M] ath_wcn36xx
-[M] b43
-[M] b43legacy
-[M] brcm80211_brcmsmac
-[M] cw1200
-[M] iwlegacy
-[M] iwlwifi_dvm
-[M] iwlwifi_mvm
-[M] libertas_tf
-[M] mac80211_hwsim
-[M] mwl8k
-[M] p54
-[M] rsi
-[M] rt2x00
-[M] rtl818x_rtl8180
-[M] rtl818x_rtl8187
-[M] rtlwifi
-[M] ti_wl1251
-[M] ti_wlcore
-[M] zd1211rw
+[MC] adm8211
+[MC] at76c50x-usb # this has some problems!!! "-" is not recognized
+[MC] ath_ar5523
+[MC] ath_ath10k
+[MC] ath_ath5k
+[MC] ath_ath9k
+[MC] ath_carl9170
+[MC] ath_wcn36xx
+[MC] b43
+[MC] b43legacy
+[MC] brcm80211_brcmsmac
+[MC] cw1200
+[MC] iwlegacy
+[MC] iwlwifi_dvm
+[MC] iwlwifi_mvm
+[MC] libertas_tf
+[MC] mac80211_hwsim
+[MC] mwl8k
+[MC] p54
+[MC] rsi
+[MC] rt2x00
+[MC] rtl818x_rtl8180
+[MC] rtl818x_rtl8187
+[MC] rtlwifi
+[MC] ti_wl1251
+[MC] ti_wlcore
+[MC] zd1211rw
