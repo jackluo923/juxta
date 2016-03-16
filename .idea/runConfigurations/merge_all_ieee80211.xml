@@ -13,7 +13,7 @@
     <module name="juxta" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analyzer/ctrl.py" />
-    <option name="PARAMETERS" value="--linux $USER_HOME$/ECE1781/linux merge_all_ieee80211" />
+    <option name="PARAMETERS" value="--linux $USER_HOME$/ECE1781/linux merge_all_ieee80211 ath_ath9k" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>

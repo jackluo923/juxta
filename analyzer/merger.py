@@ -238,6 +238,16 @@ def prepare_dir(fs, linux, src_d, dst_d, cflags):
     if not os.path.exists(dst_d):
         os.makedirs(dst_d)
 
+    # copy '.h' file for ath drivers
+    p = re.compile(ur'ath')
+    isAth = re.match(p, fs)
+    if isAth:
+        root = src_d + "/.."
+        listFiles = os.listdir(root)
+        for file in listFiles:
+            if file.endswith(".h"):
+                do_copy(os.path.join(root, file),os.path.join(dst_d, file))
+
     # copy non '.c' file
     for root, dirs, files in os.walk(src_d):
         for name in files:
@@ -653,6 +663,18 @@ def merge_ieee80211(opts, ieee80211):
 
     # adjust path
     files = adjust_file_path(src_d, files)
+
+
+
+    p = re.compile(ur'ath')
+    result = re.search(p, target)
+    if result:
+        files.append(src_d + "/../main.c")
+        files.append(src_d + "/../regd.c")
+        files.append(src_d + "/../hw.c")
+        files.append(src_d + "/../key.c")
+        files.append(src_d + "/../dfs_pattern_detector.c")
+        files.append(src_d + "/../dfs_pri_detector.c")
 
     if (ieee80211_path[ieee80211] == ""):
         prepare_dir_root(fs, opts.linux, src_d, dst_d, cflags)
