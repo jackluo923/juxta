@@ -7,10 +7,6 @@ NOTE.ieee80211 contains a list of all wireless drivers Juxta will parse for merg
 
 
 
-
-
-
-
 Environments
 ------------
 - Tested: Ubuntu 14.04
@@ -21,7 +17,7 @@ $ cd ..
 $ git clone https://github.com/torvalds/linux.git
 $ cd linux
 $ git checkout v4.0-rc2
-$ cp ../juxta/config/config-x86_64-full-fs .
+$ cp ../juxta/config/config-x86_64-full-fs .config
 $ make; make clean
 $ cd ../juxta
 ~~~~~~
@@ -29,6 +25,11 @@ $ cd ../juxta
 
 - How to build
 ~~~~~{.sh}
+Need to first make modification to the make file. Add a compile flag called compiler:
+COMPILER := -DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9
+and add this flag to every occurrence of calling cmake
+
+
 Build clang
 $  make clang-full  (first time only)
 $  make clang       (from the next)
