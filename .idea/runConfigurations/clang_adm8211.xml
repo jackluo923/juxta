@@ -13,7 +13,7 @@
     <module name="juxta" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analyzer/ctrl.py" />
-    <option name="PARAMETERS" value="--linux $USER_HOME$/ECE1781/linux clang adm8211" />
+    <option name="PARAMETERS" value="--linux $USER_HOME$/ECE1781/linux --clang $USER_HOME$/ECE1781/juxta/bin/llvm/bin/clang clang ath_ath9k" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>

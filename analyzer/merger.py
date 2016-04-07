@@ -239,7 +239,7 @@ def prepare_dir(fs, linux, src_d, dst_d, cflags):
         os.makedirs(dst_d)
 
     # copy '.h' file for ath drivers
-    p = re.compile(ur'ath')
+        p = re.compile(ur'ath')
     isAth = re.match(p, fs)
     if isAth:
         root = src_d + "/.."

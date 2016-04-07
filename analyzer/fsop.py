@@ -96,6 +96,130 @@ def dump_known_ops(fs_d):
             with open(pn) as fd:
                 __grep(fd)
 
+def normalize_ieee80211(pn):
+    ieee80211_path = [
+        # if directory is "null", it means it resides in the root wireless driver directory
+        # also assume drivers in root directory only contains 1 file to build the driver
+        "./adm8211",
+        "./at76c50x-usb",
+        "ath/ar5523",
+        "ath/ath10k",
+        "ath/ath5k",
+        "ath/ath9k",
+        "ath/carl9170",
+        "ath/wcn36xx",
+        "./b43",
+        "./b43legacy",
+        "brcm80211/brcmsmac",
+        "./cw1200",
+        "./iwlegacy",
+        "iwlwifi/dvm",
+        "iwlwifi/mvm",
+        "./libertas_tf",
+        "./mac80211_hwsim",
+        "./mwl8k",
+        "./p54",
+        "./rsi",
+        "./rt2x00", # need to fix this
+        "rtl818x/rtl8180",
+        "rtl818x/rtl8187",
+        "./rtlwifi",
+        "ti/wl1251",
+        "ti/wlcore",
+        "./zd1211rw"
+    ]
+
+    directory = ""
+    driverName = ""
+    output = []
+    outputFile = open('NOTE.ieee80211.fops.normalized', 'w')
+
+    EXPRESSIONS = {
+        "struct ieee80211_ops "                 : "/ieee80211/ops {",
+        # "struct eeprom_93cx6 "                  : "/eeprom/93cx6 {",
+        # "struct pci_driver "                    : "/pci/driver {",
+        # "struct ieee80211_supported_band "      : "/supported/band {",
+        "struct usb_driver "                    : "/usb/driver {"
+
+    }
+
+    for line in (open(pn)):
+        # special case handling - extracting directory and driver name
+        # m = re.search("^#.\S+\/(\S+)\/(\S+).c", line)
+        m = re.search("^#.\/([\w-]+).?c?\/(\w+|.)", line)
+        if m:
+            for str in ieee80211_path:
+                if m.group(1) in str:   # if driver name matches
+                    if (("adm8211" in m.group(1)) or ("at76c50x-usb" in m.group(1)) or ("mac80211_hwsim" in m.group(1)) or ("mwl8k" in m.group(1)) or ("at76c50x-usb" in m.group(1)) ):  # in driver inside root folder
+                        directory = "."
+                        driverName = m.group(1)
+                    elif ("ath" in m.group(1)):
+                        directory = m.group(1)
+                        if ("ath9k/htc" in line):    # special case
+                            driverName = "ath9k_htc"
+                        else:
+                            driverName = "ath_" + m.group(2)
+                    elif (("brcm80211" in m.group(1)) or ("rtl818x" in m.group(1)) or ("ti" in m.group(1)) or ("rt2x00" in m.group(1))): # driver inside root/driverfamily/subfolder, note rt2x00 is a special one
+                        directory = m.group(1)
+                        driverName = m.group(2)
+                    else:   # if driver is inside its own folder
+                        directory = m.group(1)
+                        driverName = m.group(1)
+                    # print 'driver:' + directory + '/' + driverName
+                    break
+            continue
+
+        # sepcial case handling - handling initialization of structure in one line
+        m = re.search("struct ieee80211_rx_status rx_status = {\s*(\d*)\s*}", line)
+        if m:
+            output.append(driverName+"/rx/status {")
+            output.append("  "+m.group(1))
+            output.append("};")
+            print driverName+"/rx/status {"
+            print "  "+m.group(1)
+            print "};"
+            continue
+
+
+        # match regular expression rules
+        regexMatched = False
+        line = line.strip()
+        for (regex, out) in EXPRESSIONS.iteritems():
+            m = re.search(regex, line)
+            if m:
+                print driverName+out
+                output.append(driverName+out)
+                regexMatched = True
+                break
+        if regexMatched:
+            continue
+
+        if ("struct" in line) and (regexMatched == False):
+            print "need to add regex: "+line
+
+        # if there is no match simply append the line assuming it's struct member and pretty print it
+        m = re.search("(\S+)\s*=\s*(\S+)", line)
+        if m:
+            print "   %-20s= %s" % (m.group(1), m.group(2))
+            output.append("   %-20s= %s" % (m.group(1), m.group(2)))
+            continue
+
+        if ("};" in line):
+            print line
+            output.append(line)
+            continue
+
+
+        if ("#" in line):
+            continue
+
+    print output
+    for line in output:
+        outputFile.write(line+"\n")
+
+
+
+
 def normalize_fops(pn):
     RULES = {
         "inode_operations (\w+)_file_inode_operations"           : "%s/inode/file",
@@ -188,7 +312,10 @@ def _load_fops(pn):
 # XXX. remove after cleaning fops-3/4
 dbg.quiet(["trace"])
 global FOPS
-FOPS = _load_fops("NOTE.fops-4.0")
+# FOPS = _load_fops("NOTE.fops-4.0")
+FOPS = _load_fops("NOTE.ieee80211.fops.normalized")
+# FOPS = _load_fops("NOTE.fops-4.0")
+
 
 def get_ops(*specifiers):
     def _match(key, specifiers):
@@ -233,10 +360,13 @@ def get_matched_ops(*specifiers):
     return match_list
 
 if __name__ == '__main__':
-    pprint.pprint(get_matched_ops("*", "inode"))
+    # pprint.pprint(get_matched_ops("*", "inode"))
     # utils.install_pdb()
     # normalize_fops("NOTE.fops-4.0")
-    pprint.pprint(get_all_fs_entry_funcs())
+    # pprint.pprint(get_all_fs_entry_funcs())
+
+
+    normalize_ieee80211("NOTE.ieee80211.fops")
 
     # query ext4/inode/*
     # pprint.pprint(get_ops("ext4", "inode"))

@@ -167,4 +167,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         log_d = sys.argv[1]
 
+
+
     parse_and_pickle(log_d)
