@@ -314,7 +314,6 @@ dbg.quiet(["trace"])
 global FOPS
 # FOPS = _load_fops("NOTE.fops-4.0")
 FOPS = _load_fops("NOTE.ieee80211.fops.normalized")
-# FOPS = _load_fops("NOTE.fops-4.0")
 
 
 def get_ops(*specifiers):
