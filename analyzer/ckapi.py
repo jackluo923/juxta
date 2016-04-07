@@ -22,7 +22,8 @@ from checker import BaseChecker, CheckerRunner, CheckerPlan
 from argnorm import errno_to_str
 
 ROOT  = os.path.abspath(os.path.dirname(__file__))
-PICKLE_DIR = os.path.normpath("/data/fss-data/out-2015-03-19")
+# PICKLE_DIR = os.path.normpath("/data/fss-data/out-2015-03-19")
+PICKLE_DIR = os.path.normpath(os.path.join(ROOT, "./out"))
 
 MAX_S8  = 127
 MIN_S8  = -128
