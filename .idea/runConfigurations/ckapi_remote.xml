@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="merge nfs" type="PythonConfigurationType" factoryName="Python" singleton="true">
+  <configuration default="false" name="ckapi_remote" type="PythonConfigurationType" factoryName="Python" singleton="true">
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
@@ -12,8 +12,8 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="juxta" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analyzer/ctrl.py" />
-    <option name="PARAMETERS" value="--linux $USER_HOME$/ECE1781/linux merge nfs" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analyzer/ckapi.py" />
+    <option name="PARAMETERS" value="--pickle $USER_HOME$/ECE1781/juxta/analyzer/out" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>
